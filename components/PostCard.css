@@ -1,0 +1,59 @@
+/* components/PostCard.css */
+.post-card {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-author-username {
+  font-weight: 700;
+}
+
+.post-timestamp {
+  font-size: 0.9rem;
+  opacity: 0.6;
+}
+
+.post-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap; /* Respects line breaks */
+}
+
+.post-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.action-button:hover {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* --- Username Theme Colors --- */
+/* We use '-text' to avoid conflicting with other theme classes */
+.ytg-text { color: #ffc700; }
+.bau-text { color: #007bff; }
+.arl-text { color: #28a745; }
+.ktf-text { color: #dc3545; }
+.shniggers-text { color: #6f42c1; }

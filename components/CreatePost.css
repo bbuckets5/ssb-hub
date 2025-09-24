@@ -1,0 +1,44 @@
+/* components/CreatePost.css */
+.create-post-container {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.create-post-textarea {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  font-family: inherit;
+  padding: 0.5rem 0;
+}
+
+.create-post-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.create-post-actions .cta-button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 9999px; /* Pill shape */
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.create-post-actions .cta-button:hover {
+  filter: brightness(1.2);
+}
+
+.create-post-actions .cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

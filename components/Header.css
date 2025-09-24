@@ -1,0 +1,91 @@
+/* components/Header.css */
+
+.main-header {
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(16, 16, 16, 0.8);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* --- Left Section --- */
+.header-left {
+  flex: 1;
+}
+
+.community-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--secondary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 0 10px -5px var(--primary-color);
+}
+
+.community-name {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.community-count {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* --- Center Section --- */
+.header-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+  background-color: var(--secondary-color);
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+}
+
+.main-nav a {
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-color);
+  opacity: 0.7;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 2px solid transparent;
+  transition: opacity 0.2s, color 0.2s, border-color 0.2s; /* Added color to transition */
+}
+
+/* --- MODIFIED: Combined the hover and active styles --- */
+/* Now, both the active link and the link you're hovering over will use the theme color */
+.main-nav a:hover,
+.main-nav a.active {
+  opacity: 1;
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* --- Right Section --- */
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,125 @@
+/* app/signup/Signup.css */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.auth-form-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-form .form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.auth-form label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.auth-form input {
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.auth-form .cta-button {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.auth-form .cta-button:hover {
+  filter: brightness(1.2);
+}
+
+.form-message {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-switch-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  opacity: 0.8;
+}
+
+.auth-switch-link a {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.password-strength-checker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.strength-requirement {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.strength-requirement.invalid {
+  color: #ff8a8a;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.strength-requirement.valid {
+  color: #a1ffb6;
+  background-color: rgba(0, 255, 64, 0.1);
+}
+
+/* Add a checkmark for valid requirements */
+.strength-requirement.valid::before {
+  content: '✓ ';
+  font-weight: bold;
+}
+
+/* Add this to the bottom of app/signup/Signup.css */
+
+.password-match-indicator {
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}

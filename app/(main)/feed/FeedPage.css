@@ -1,0 +1,18 @@
+/* app/(main)/feed/FeedPage.css */
+.feed-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  min-height: 100vh;
+}
+
+.create-post-placeholder {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
