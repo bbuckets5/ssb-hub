@@ -60,7 +60,7 @@ export default function AlertsPage() {
     <div className="alerts-page-container">
       <div className="alerts-header">
         <h1>Sound Alerts</h1>
-        <p>Spend your "SSB Rax" to play a sound live on stream!</p>
+        <p>Spend your &quot;SSB Rax&quot; to play a sound live on stream!</p>
       </div>
       <div className="alerts-grid">
         {soundAlerts.map((alert) => (

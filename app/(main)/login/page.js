@@ -81,7 +81,7 @@ export default function LoginPage() {
         </form>
         {message && <p className="form-message">{message}</p>}
         <p className="auth-switch-link">
-          Don't have an account? <Link href="/signup">Sign Up</Link>
+          Don&apos;t have an account? <Link href="/signup">Sign Up</Link>
         </p>
       </div>
     </div>

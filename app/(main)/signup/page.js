@@ -77,7 +77,7 @@ export default function SignupPage() {
         {/* 4. Display a confirmation message */}
         {community && (
           <p className="community-join-message">
-            You're joining the <span className={`${community}-text`}>{community.toUpperCase()}</span> community!
+            You&apos;re joining the <span className={`${community}-text`}>{community.toUpperCase()}</span> community!
           </p>
         )}
 
