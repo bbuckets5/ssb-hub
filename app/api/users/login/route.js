@@ -18,13 +18,27 @@ export async function POST(request) {
             return NextResponse.json({ message: 'Invalid credentials. Please try again.' }, { status: 401 });
         }
 
-        // 2. Compare the submitted password with the hashed password in the database
+        // 2. Compare the submitted password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return NextResponse.json({ message: 'Invalid credentials. Please try again.' }, { status: 401 });
         }
 
-        // 3. If passwords match, create a secure token (JWT)
+        // --- NEW: Daily Login Bonus Logic ---
+        const today = new Date();
+        const lastLogin = user.lastLogin ? new Date(user.lastLogin) : null;
+        let dailyRaxAwarded = 0;
+
+        // Check if last login was before the start of today
+        if (!lastLogin || lastLogin.toDateString() !== today.toDateString()) {
+            dailyRaxAwarded = 10; // Award 10 Rax
+            user.rax += dailyRaxAwarded;
+            user.lastLogin = new Date(); // Update the last login time
+            await user.save();
+        }
+        // ------------------------------------
+
+        // 3. Create a secure token (JWT)
         const payload = {
             userId: user._id,
             username: user.username,
@@ -34,11 +48,16 @@ export async function POST(request) {
         const token = jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '1d' } // Token will be valid for 1 day
+            { expiresIn: '1d' }
         );
 
-        // 4. Send the token back to the user
-        return NextResponse.json({ message: 'Login successful!', token }, { status: 200 });
+        // 4. Send the token and a dynamic message back to the user
+        let message = 'Login successful!';
+        if (dailyRaxAwarded > 0) {
+            message = `Login successful! You earned +${dailyRaxAwarded} Rax for your daily login!`;
+        }
+
+        return NextResponse.json({ message: message, token }, { status: 200 });
 
     } catch (error) {
         console.error("Login failed:", error);

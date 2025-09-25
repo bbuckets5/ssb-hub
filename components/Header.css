@@ -71,11 +71,9 @@
   text-decoration: none;
   padding: 0.5rem 0;
   border-bottom: 2px solid transparent;
-  transition: opacity 0.2s, color 0.2s, border-color 0.2s; /* Added color to transition */
+  transition: opacity 0.2s, color 0.2s, border-color 0.2s;
 }
 
-/* --- MODIFIED: Combined the hover and active styles --- */
-/* Now, both the active link and the link you're hovering over will use the theme color */
 .main-nav a:hover,
 .main-nav a.active {
   opacity: 1;
@@ -88,4 +86,36 @@
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  align-items: center; /* Ensures vertical alignment */
 }
+
+/* --- MODIFIED: Added margin for spacing --- */
+.user-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 1.5rem; /* Increased spacing */
+}
+.user-display .username {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.user-display .rax-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--secondary-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+.user-display .rax-icon {
+    font-size: 1rem;
+}
+
+/* --- NEW: Username Theme Colors --- */
+.ytg-text { color: #ffc700; }
+.bau-text { color: #007bff; }
+.arl-text { color: #28a745; }
+.ktf-text { color: #dc3545; }
+.shniggers-text { color: #6f42c1; }

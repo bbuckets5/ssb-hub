@@ -66,3 +66,20 @@
 .user-dropdown-menu .logout-button:hover {
   background-color: var(--primary-color);
 }
+
+/* Add this to the bottom of components/UserNav.css */
+
+.user-dropdown-menu .rax-display {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(0,0,0,0.2);
+  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+}
+
+.rax-icon {
+  font-size: 1.1rem;
+}

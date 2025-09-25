@@ -13,6 +13,8 @@
 
 .post-author-username {
   font-weight: 700;
+  /* The default color will be white if no community is set */
+  color: var(--text-color);
 }
 
 .post-timestamp {
@@ -23,7 +25,7 @@
 .post-content {
   font-size: 1rem;
   line-height: 1.5;
-  white-space: pre-wrap; /* Respects line breaks */
+  white-space: pre-wrap;
 }
 
 .post-actions {
@@ -50,10 +52,24 @@
   color: var(--primary-color);
 }
 
-/* --- Username Theme Colors --- */
-/* We use '-text' to avoid conflicting with other theme classes */
-.ytg-text { color: #ffc700; }
-.bau-text { color: #007bff; }
-.arl-text { color: #28a745; }
-.ktf-text { color: #dc3545; }
-.shniggers-text { color: #6f42c1; }
+/* --- MODIFIED: Username Theme Colors --- */
+/* By combining the classes, we make the rule more specific and powerful */
+.post-author-username.ytg-text { color: #ffc700; }
+.post-author-username.bau-text { color: #007bff; }
+.post-author-username.arl-text { color: #28a745; }
+.post-author-username.ktf-text { color: #dc3545; }
+.post-author-username.shniggers-text { color: #6f42c1; }
+
+
+/* Add this to the bottom of components/PostCard.css */
+
+.action-button.liked {
+  color: var(--primary-color);
+  opacity: 1;
+}
+
+.like-error {
+  font-size: 0.8rem;
+  color: #ff8a8a;
+  margin-left: 1rem;
+}

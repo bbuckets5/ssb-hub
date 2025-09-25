@@ -1,18 +1,17 @@
 // app/api/posts/route.js
 
 import { NextResponse } from 'next/server';
-// --- MODIFIED: 'headers' is no longer imported ---
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/dbConnect';
 import Post from '@/models/Post';
 import User from '@/models/User';
 
-// GET function to fetch all posts (no changes needed here)
+// GET function to fetch all posts
 export async function GET() {
     await dbConnect();
     try {
         const posts = await Post.find({})
-            .sort({ createdAt: -1 })
+            .sort({ createdAt: -1 }) 
             .populate('author', 'username community');
 
         return NextResponse.json(posts, { status: 200 });
@@ -26,7 +25,6 @@ export async function GET() {
 export async function POST(request) {
     await dbConnect();
     try {
-        // --- MODIFIED: Get headers directly from the 'request' object ---
         const authHeader = request.headers.get('authorization');
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -52,6 +50,10 @@ export async function POST(request) {
             community: user.community,
         });
         await newPost.save();
+        
+        // --- NEW: Award Rax for posting ---
+        await User.findByIdAndUpdate(userId, { $inc: { rax: 5 } });
+        // ---------------------------------
         
         const postToSend = await Post.findById(newPost._id).populate('author', 'username community');
 

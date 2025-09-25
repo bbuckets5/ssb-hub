@@ -1,0 +1,21 @@
+/* app/(main)/live/LivePage.css */
+
+.live-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+.stream-wrapper {
+  width: 100%;
+  max-width: 1000px; /* Reduced from 1400px */
+}
+
+.stream-iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}

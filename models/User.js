@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, 'Please provide a username.'],
-    unique: true, // Ensures no two users can have the same username
+    unique: true,
     trim: true,
   },
   email: {
@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
   },
   community: {
     type: String,
-    enum: [null, 'ytg', 'bau', 'arl', 'ktf', 'shniggers'], // Updated list
+    enum: [null, 'ytg', 'bau', 'arl', 'ktf', 'shniggers'],
     default: null,
   },
   allegianceChangesLeft: {
@@ -33,6 +33,23 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+  rax: {
+    type: Number,
+    required: true,
+    default: 100,
+  },
+  lastLogin: {
+    type: Date,
+  },
+  // --- NEW FIELDS ADDED ---
+  dailyLikesCount: {
+    type: Number,
+    default: 0
+  },
+  lastLikeDate: {
+    type: Date
+  },
+  // ------------------------
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

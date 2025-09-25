@@ -4,28 +4,14 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 import './UserNav.css';
 
-export default function UserNav() {
+export default function UserNav({ user }) { // Receives user as a prop
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const dropdownRef = useRef(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setUser(decodedToken);
-      } catch (error) {
-        // Handle invalid token by clearing it
-        localStorage.removeItem('authToken');
-      }
-    }
-  }, []);
-
+  // This effect handles closing the dropdown if you click outside of it
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -37,16 +23,12 @@ export default function UserNav() {
   }, [dropdownRef]);
 
   const handleLogout = () => {
-    // --- MODIFIED: Added cleanup for theme ---
     localStorage.removeItem('authToken');
-    localStorage.removeItem('selectedCommunity'); // 1. Remove the saved community
-    document.body.className = ''; // 2. Reset the theme on the body tag
-    // -----------------------------------------
-    setUser(null);
+    localStorage.removeItem('selectedCommunity');
+    document.body.className = '';
     setIsOpen(false);
-    router.push('/');
-    // Use window.location.reload() for a hard refresh to ensure clean state
-    window.location.reload(); 
+    // Use window.location.href for a full page reload to ensure clean state
+    window.location.href = '/'; 
   };
 
   return (
@@ -58,8 +40,9 @@ export default function UserNav() {
       {isOpen && (
         <div className="user-dropdown-menu">
           {user ? (
+            // The dropdown is now simpler for logged-in users
             <>
-              <div className="user-info">Welcome, {user.username}!</div>
+              {/* We can add links like 'My Profile' here later */}
               <button className="logout-button" onClick={handleLogout}>Logout</button>
             </>
           ) : (

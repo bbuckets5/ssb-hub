@@ -11,35 +11,46 @@ import UserNav from './UserNav';
 export default function Header() {
   const [currentCommunity, setCurrentCommunity] = useState(null);
   const [counts, setCounts] = useState({});
+  const [user, setUser] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    // Function to read from localStorage and fetch data
-    const updateHeader = async () => {
+    const updateHeaderData = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const res = await fetch('/api/users/profile', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) setUser(await res.json());
+        } catch (error) {
+          console.error('Failed to fetch user', error);
+        }
+      } else {
+        setUser(null);
+      }
+
       const selectedCommunity = localStorage.getItem('selectedCommunity');
       if (selectedCommunity) {
         setCurrentCommunity(selectedCommunity);
-        
-        // Apply theme to the whole page
         document.body.className = `${selectedCommunity}-theme`;
-
-        // Fetch counts
         try {
           const res = await fetch('/api/community/counts');
           const data = await res.json();
           setCounts(data);
         } catch (error) {
-          console.error("Failed to fetch counts for header", error);
+          console.error("Failed to fetch counts", error);
         }
+      } else {
+        document.body.className = '';
+        setCurrentCommunity(null);
       }
     };
 
-    updateHeader();
-
-    // Listen for changes to localStorage from other tabs/windows
-    window.addEventListener('storage', updateHeader);
-    return () => window.removeEventListener('storage', updateHeader);
-  }, []);
+    updateHeaderData();
+    window.addEventListener('storage', updateHeaderData);
+    return () => window.removeEventListener('storage', updateHeaderData);
+  }, [pathname]);
 
   const memberCount = currentCommunity && counts[currentCommunity] !== undefined
     ? counts[currentCommunity]
@@ -62,11 +73,23 @@ export default function Header() {
             <Link href="/feed" className={pathname === '/feed' ? 'active' : ''}>Feed</Link>
             <Link href="/live" className={pathname === '/live' ? 'active' : ''}>Live</Link>
             <Link href="/games" className={pathname === '/games' ? 'active' : ''}>Games</Link>
+            <Link href="/alerts" className={pathname === '/alerts' ? 'active' : ''}>Alerts</Link>
           </nav>
         </div>
 
         <div className="header-right">
-          <UserNav />
+          {user && (
+            <div className="user-display">
+              {/* --- MODIFIED: Added community theme class to username --- */}
+              <span className={`username ${currentCommunity}-text`}>{user.username}</span>
+              <div className="rax-display">
+                {/* --- MODIFIED: Changed the emoji --- */}
+                <span className="rax-icon">💰</span>
+                <span>{user.rax?.toLocaleString() || 0}</span>
+              </div>
+            </div>
+          )}
+          <UserNav user={user} />
         </div>
       </div>
     </header>
