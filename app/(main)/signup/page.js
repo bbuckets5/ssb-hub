@@ -46,6 +46,7 @@ export default function SignupPage() {
         return;
     }
 
+
     try {
       const res = await fetch('/api/users/register', {
         method: 'POST',
@@ -114,3 +115,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+// app/(main)/login/page.js
