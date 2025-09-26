@@ -11,7 +11,6 @@ const QuestionSchema = new mongoose.Schema({
   options: {
     type: [String],
     required: true,
-    // This validation ensures there are always exactly 4 answer options
     validate: [
       (val) => val.length === 4,
       'A question must have exactly 4 options.'
@@ -21,8 +20,18 @@ const QuestionSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide the correct answer.'],
   },
-  // You could add a category later, e.g., 'ytg', 'bau', etc.
-  // category: { type: String }
+  // --- NEW FIELDS ADDED ---
+  submittedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'denied'],
+    default: 'pending',
+  }
+  // ------------------------
 }, { timestamps: true });
 
 export default mongoose.models.Question || mongoose.model('Question', QuestionSchema);

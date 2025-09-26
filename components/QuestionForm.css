@@ -1,0 +1,75 @@
+/* components/QuestionForm.css */
+.question-form-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 3rem;
+  padding: 2rem;
+  border-radius: 12px;
+  border-top: 2px solid var(--primary-color);
+}
+
+.question-form-container h2 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.question-form-container p {
+  text-align: center;
+  margin-bottom: 2rem;
+  opacity: 0.7;
+}
+
+.question-form-container .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.question-form-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.question-form-container input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.option-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-input-group input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary-color);
+}
+
+.question-form-container .cta-button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.question-form-container .cta-button:hover {
+  filter: brightness(1.2);
+}
