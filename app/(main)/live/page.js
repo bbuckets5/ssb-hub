@@ -2,52 +2,57 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import StreamerSidebar from '@/components/StreamerSidebar'; // Import the new component
 import './LivePage.css';
 
-// This is our map of communities to streamer channels
+// This is our list of streamers for the sidebar
+const ssbStreamers = [
+  { name: 'Adin Ross', channel: 'adinross' },
+  { name: 'Cheesur', channel: 'cheesur' },
+  { name: 'Cuffem', channel: 'cuffem' },
+  { name: 'Konvy', channel: 'konvy' },
+  { name: 'N3on', channel: 'n3on' },
+  // Add more here
+];
+
+// This is our map of communities to their main streamer
 const communityStreamers = {
   ytg: 'cheesur',
   bau: 'cuffem',
   arl: 'adinross',
   ktf: 'konvy',
   shniggers: 'n3on',
-  // We can add more here later
 };
 
 export default function LivePage() {
-  const [streamerChannel, setStreamerChannel] = useState(''); // Start with no channel
+  const [activeChannel, setActiveChannel] = useState('adinross'); // Default channel
 
   useEffect(() => {
-    // Check which community the user has selected
+    // Check which community the user has selected to set the initial stream
     const selectedCommunity = localStorage.getItem('selectedCommunity');
-    
-    // Find the correct streamer from our map
-    const channel = communityStreamers[selectedCommunity];
+    const initialChannel = communityStreamers[selectedCommunity];
 
-    if (channel) {
-      setStreamerChannel(channel);
-    } else {
-      // If no community is chosen or it's not in our map,
-      // you can set a default or leave it blank
-      setStreamerChannel('adinross'); // Default to a main streamer
+    if (initialChannel) {
+      setActiveChannel(initialChannel);
     }
   }, []);
 
   return (
     <div className="live-page-container">
-      <div className="stream-wrapper">
-        {streamerChannel ? (
+      <div className="stream-container">
+        <div className="stream-wrapper">
           <iframe
-            src={`https://player.kick.com/${streamerChannel}`}
+            src={`https://player.kick.com/${activeChannel}`}
             className="stream-iframe"
             allowFullScreen={true}
           ></iframe>
-        ) : (
-          <div className="no-stream">
-            <p>Select a community from the homepage to view a stream.</p>
-          </div>
-        )}
+        </div>
       </div>
+      <StreamerSidebar
+        streamers={ssbStreamers}
+        activeStreamer={activeChannel}
+        onSelectStreamer={setActiveChannel}
+      />
     </div>
   );
 }

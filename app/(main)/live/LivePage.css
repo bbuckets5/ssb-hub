@@ -2,15 +2,21 @@
 
 .live-page-container {
   display: flex;
+  height: calc(100vh - 80px); /* Adjust 80px to your actual header height */
+}
+
+.stream-container {
+  flex: 1; /* This makes the stream container take up the remaining space */
+  display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  min-height: calc(100vh - 80px);
+  min-width: 0; 
 }
 
 .stream-wrapper {
   width: 100%;
-  max-width: 1000px; /* Reduced from 1400px */
+  max-width: 1400px;
 }
 
 .stream-iframe {
