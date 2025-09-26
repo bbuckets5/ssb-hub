@@ -8,6 +8,8 @@ export default function QuestionForm() {
   const [questionText, setQuestionText] = useState('');
   const [options, setOptions] = useState(['', '', '', '']);
   const [correctAnswer, setCorrectAnswer] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -15,14 +17,42 @@ export default function QuestionForm() {
     setOptions(newOptions);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Later, this will call our API
-    alert('Question submitted for review!');
-    // Reset form
-    setQuestionText('');
-    setOptions(['', '', '', '']);
-    setCorrectAnswer('');
+    setIsLoading(true);
+    setMessage('');
+
+    try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            throw new Error('You must be logged in to submit a question.');
+        }
+
+        const res = await fetch('/api/trivia/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ questionText, options, correctAnswer })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.message || 'Failed to submit question.');
+        }
+
+        setMessage('Question submitted for review successfully!');
+        // Reset form on success
+        setQuestionText('');
+        setOptions(['', '', '', '']);
+        setCorrectAnswer('');
+
+    } catch (error) {
+        setMessage(error.message);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -50,6 +80,7 @@ export default function QuestionForm() {
                   name="correctAnswer"
                   id={`option-${index}`}
                   value={option}
+                  checked={correctAnswer === option}
                   onChange={() => setCorrectAnswer(option)}
                   required
                 />
@@ -64,7 +95,10 @@ export default function QuestionForm() {
             ))}
           </div>
         </div>
-        <button type="submit" className="cta-button">Submit for Review</button>
+        <button type="submit" className="cta-button" disabled={isLoading}>
+          {isLoading ? 'Submitting...' : 'Submit for Review'}
+        </button>
+        {message && <p style={{ marginTop: '1rem', fontWeight: '500' }}>{message}</p>}
       </form>
     </div>
   );
