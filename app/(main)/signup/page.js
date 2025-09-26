@@ -5,7 +5,6 @@ import SignupForm from '@/components/SignupForm';
 
 export default function SignupPage() {
   return (
-    // Suspense provides a fallback while the dynamic component loads
     <Suspense fallback={<div className="auth-container"><p>Loading form...</p></div>}>
       <SignupForm />
     </Suspense>
