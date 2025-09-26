@@ -21,7 +21,6 @@
   border-radius: 8px;
 }
 
-/* --- NEW: Styles for selectable approved cards --- */
 .approved-card.selectable {
   display: flex;
   align-items: center;
@@ -36,7 +35,6 @@
 .approved-card .question-details {
   flex: 1;
 }
-/* ------------------------------------------------ */
 
 .submission-question, .approved-question-text {
   font-size: 1.2rem;
@@ -88,8 +86,9 @@
 
 .approve-btn { background-color: #28a745; }
 .deny-btn { background-color: #dc3545; }
+.edit-btn { background-color: #6c757d; } /* Added style for the edit button */
 
-/* --- NEW: Styles for the Create Game section --- */
+
 .create-game-section {
   margin-top: 2rem;
   padding: 2rem;
@@ -128,4 +127,57 @@
 .create-game-section .cta-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* --- NEW: Styles for the Edit Modal --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  border: 1px solid var(--border-color);
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modal-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-button.primary {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.modal-button.secondary {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
 }
