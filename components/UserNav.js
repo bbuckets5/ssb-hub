@@ -11,7 +11,6 @@ export default function UserNav({ user }) { // Receives user as a prop
   const dropdownRef = useRef(null);
   const router = useRouter();
 
-  // This effect handles closing the dropdown if you click outside of it
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -27,7 +26,6 @@ export default function UserNav({ user }) { // Receives user as a prop
     localStorage.removeItem('selectedCommunity');
     document.body.className = '';
     setIsOpen(false);
-    // Use window.location.href for a full page reload to ensure clean state
     window.location.href = '/'; 
   };
 
@@ -40,9 +38,7 @@ export default function UserNav({ user }) { // Receives user as a prop
       {isOpen && (
         <div className="user-dropdown-menu">
           {user ? (
-            // The dropdown is now simpler for logged-in users
             <>
-              {/* We can add links like 'My Profile' here later */}
               <button className="logout-button" onClick={handleLogout}>Logout</button>
             </>
           ) : (

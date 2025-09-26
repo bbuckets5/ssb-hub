@@ -2,11 +2,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import jwtDecode from 'jwt-decode'; // fixed import
+import { jwtDecode } from 'jwt-decode'; // Corrected import
 import './PostCard.css';
 
 export default function PostCard({ post }) {
-  const [likeCount, setLikeCount] = useState(Array.isArray(post.likes) ? post.likes.length : (post.likes || 0));
+  const initialLikes = Array.isArray(post.likes) ? post.likes.length : (post.likes || 0);
+  
+  const [likeCount, setLikeCount] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -15,27 +17,38 @@ export default function PostCard({ post }) {
     const likesArray = Array.isArray(post.likes) ? post.likes : [];
     const token = localStorage.getItem('authToken');
     if (token) {
-      const decoded = jwtDecode(token);
-      if (likesArray.includes(decoded.userId)) {
-        setIsLiked(true);
+      try {
+        const decoded = jwtDecode(token);
+        if (likesArray.includes(decoded.userId)) {
+          setIsLiked(true);
+        }
+      } catch (err) {
+        // This can happen if the token is invalid or expired
+        console.error('Invalid token:', err);
       }
     }
-  }, [post.likes]); // depend on post.likes only
+  }, [post.likes]);
 
   const handleLike = async () => {
     setIsLoading(true);
     setError('');
     try {
       const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('You must be logged in to like a post.');
+      if (!token) {
+        throw new Error('You must be logged in to like a post.');
+      }
 
       const res = await fetch(`/api/posts/${post._id}/like`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
-
+      
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to like post.');
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to like post.');
+      }
 
       setIsLiked(true);
       setLikeCount(data.likes);
@@ -78,4 +91,3 @@ export default function PostCard({ post }) {
     </div>
   );
 }
-
