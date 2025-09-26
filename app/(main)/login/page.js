@@ -1,18 +1,18 @@
-// app/login/page.js
+// app/(main)/login/page.js
 
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Import the router
-import '../signup/Signup.css'; // Reuse the signup form styles
+import { useRouter } from 'next/navigation';
+import '../signup/Signup.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,16 +29,13 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         throw new Error(data.message || 'Something went wrong');
       }
 
-      // If login is successful, save the token
       localStorage.setItem('authToken', data.token);
       setMessage('Login successful! Redirecting...');
       
-      // Redirect to the homepage after a short delay
       setTimeout(() => {
         router.push('/');
       }, 1000);

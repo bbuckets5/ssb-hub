@@ -16,7 +16,7 @@ const soundAlerts = [
 ];
 
 export default function AlertsPage() {
-  const [loadingSound, setLoadingSound] = useState(null); // To show loading state on a specific button
+  const [loadingSound, setLoadingSound] = useState(null);
 
   const handlePlaySound = async (alert) => {
     setLoadingSound(alert.name);
@@ -40,11 +40,9 @@ export default function AlertsPage() {
         throw new Error(data.message || 'Transaction failed.');
       }
 
-      // If the API call was successful, then play the sound
       const audio = new Audio(alert.file);
       audio.play();
       
-      // After the sound plays, reload the page to update the Rax in the header
       audio.onended = () => {
         window.location.reload();
       };
