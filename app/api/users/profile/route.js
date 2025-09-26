@@ -18,8 +18,8 @@ export async function GET(request) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.userId;
 
-        // --- MODIFIED: Now also fetches the 'community' field ---
-        const user = await User.findById(userId).select('username rax community');
+        // --- MODIFIED: Now also fetches the 'role' field ---
+        const user = await User.findById(userId).select('username rax community role');
         if (!user) {
             return NextResponse.json({ message: 'User not found.' }, { status: 404 });
         }

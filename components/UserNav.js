@@ -39,8 +39,10 @@ export default function UserNav({ user }) {
         <div className="user-dropdown-menu">
           {user ? (
             <>
-              {/* --- NEW: Link to change allegiance --- */}
-              {/* This sends them to the homepage to pick a new community */}
+              {/* --- NEW: Conditional Admin Link --- */}
+              {user.role === 'admin' && (
+                <Link href="/admin" onClick={() => setIsOpen(false)}>Admin Dashboard</Link>
+              )}
               <Link href="/" onClick={() => setIsOpen(false)}>Change Allegiance</Link>
               <button className="logout-button" onClick={handleLogout}>Logout</button>
             </>

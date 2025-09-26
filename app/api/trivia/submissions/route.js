@@ -3,27 +3,26 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Question from '@/models/Question';
-import { requireAdmin } from '@/lib/auth'; // We'll create this helper
+import { requireAdmin } from '@/lib/auth'; // Now imports our real helper
 
 export async function GET(request) {
     await dbConnect();
     try {
-        // First, ensure the user is an admin
-        // This is a placeholder for the actual helper logic
-        const authHeader = request.headers.get('authorization');
-        if (!authHeader) { // Simple check for now
-             // In a real app, we'd verify the token and check the user's role
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-        }
+        // This line now provides proper security for this route
+        await requireAdmin();
 
         const pendingQuestions = await Question.find({ status: 'pending' })
-            .populate('submittedBy', 'username') // Get the username of the submitter
-            .sort({ createdAt: -1 }); // Show the newest submissions first
+            .populate('submittedBy', 'username')
+            .sort({ createdAt: -1 });
 
         return NextResponse.json(pendingQuestions, { status: 200 });
 
     } catch (error) {
         console.error("Failed to fetch submissions:", error);
+        // Handle unauthorized errors from our helper
+        if (error.message.includes('Forbidden') || error.message.includes('Authentication')) {
+            return NextResponse.json({ message: error.message }, { status: 403 });
+        }
         return NextResponse.json({ message: 'Server error.' }, { status: 500 });
     }
 }
