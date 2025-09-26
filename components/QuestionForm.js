@@ -28,7 +28,7 @@ export default function QuestionForm() {
   return (
     <div className="question-form-container glass">
       <h2>Submit a Trivia Question</h2>
-      <p>Think of a question only a true fan would know. If approved, you'll get Rax!</p>
+      <p>Think of a question only a true fan would know. If approved, you&apos;ll get Rax!</p>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="questionText">Question</label>
