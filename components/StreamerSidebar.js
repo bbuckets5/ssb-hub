@@ -6,7 +6,7 @@ import './StreamerSidebar.css';
 export default function StreamerSidebar({ streamers, activeStreamer, onSelectStreamer }) {
   return (
     <div className="streamer-sidebar">
-      <h3 className="sidebar-title">Who's Live</h3>
+      <h3 className="sidebar-title">Who&apos;s Live</h3>
       <ul className="streamer-list">
         {streamers.map((streamer) => (
           <li key={streamer.channel}>
