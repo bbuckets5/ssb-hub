@@ -9,6 +9,7 @@ export default function TriviaGame() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isAnswering, setIsAnswering] = useState(false); // To disable buttons during API call
   const [error, setError] = useState('');
 
   const fetchQuestion = async () => {
@@ -35,13 +36,45 @@ export default function TriviaGame() {
     fetchQuestion(); // Fetch the first question when the component loads
   }, []);
 
-  const handleAnswerClick = (option) => {
+  // This function now calls our API to check the answer
+  const handleAnswerClick = async (option) => {
     setSelectedAnswer(option);
-    if (option === question.correctAnswer) {
-      setFeedback('Correct!');
-      // We will add logic to award Rax here later
-    } else {
-      setFeedback(`Wrong! The correct answer was: ${question.correctAnswer}`);
+    setIsAnswering(true);
+    
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('You must be logged in to play.');
+      }
+
+      const res = await fetch('/api/trivia/answer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          questionId: question._id,
+          selectedAnswer: option
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to submit answer.');
+      }
+
+      // Set feedback based on the API response
+      if (data.isCorrect) {
+        setFeedback(`Correct! +${data.raxAwarded} Rax!`);
+      } else {
+        setFeedback(`Wrong! The correct answer was: ${data.correctAnswer}`);
+      }
+
+    } catch (err) {
+      setFeedback(err.message);
+    } finally {
+      setIsAnswering(false);
     }
   };
 
@@ -64,7 +97,7 @@ export default function TriviaGame() {
             key={option}
             className="answer-button"
             onClick={() => handleAnswerClick(option)}
-            disabled={!!selectedAnswer} // Disable buttons after an answer is chosen
+            disabled={!!selectedAnswer || isAnswering}
           >
             {option}
           </button>
@@ -73,9 +106,12 @@ export default function TriviaGame() {
       {feedback && (
         <div className="feedback-container">
           <p className="feedback-text">{feedback}</p>
-          <button className="next-button" onClick={fetchQuestion}>Next Question</button>
+          <button className="next-button" onClick={fetchQuestion} disabled={isAnswering}>
+            Next Question
+          </button>
         </div>
       )}
     </div>
   );
+
 }
