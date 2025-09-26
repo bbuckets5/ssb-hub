@@ -1,0 +1,40 @@
+/* components/TriviaGame.css */
+.trivia-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--secondary-color);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.trivia-question {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.trivia-answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 1rem;
+}
+
+.answer-button {
+  width: 100%;
+  padding: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.answer-button:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.02);
+}
