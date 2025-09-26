@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import StreamerSidebar from '@/components/StreamerSidebar'; // Import the new component
+import StreamerSidebar from '@/components/StreamerSidebar';
 import './LivePage.css';
 
 // This is our list of streamers for the sidebar
@@ -12,7 +12,7 @@ const ssbStreamers = [
   { name: 'Cuffem', channel: 'cuffem' },
   { name: 'Konvy', channel: 'konvy' },
   { name: 'N3on', channel: 'n3on' },
-  // Add more here
+  { name: 'ShnaggyHose', channel: 'shnaggyhose' }, // Added ShnaggyHose
 ];
 
 // This is our map of communities to their main streamer
@@ -21,7 +21,7 @@ const communityStreamers = {
   bau: 'cuffem',
   arl: 'adinross',
   ktf: 'konvy',
-  shniggers: 'n3on',
+  shniggers: 'shnaggyhose', // Corrected to shnaggyhose
 };
 
 export default function LivePage() {
