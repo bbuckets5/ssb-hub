@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import './UserNav.css';
 
-export default function UserNav({ user }) { // Receives user as a prop
+export default function UserNav({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
@@ -39,6 +39,9 @@ export default function UserNav({ user }) { // Receives user as a prop
         <div className="user-dropdown-menu">
           {user ? (
             <>
+              {/* --- NEW: Link to change allegiance --- */}
+              {/* This sends them to the homepage to pick a new community */}
+              <Link href="/" onClick={() => setIsOpen(false)}>Change Allegiance</Link>
               <button className="logout-button" onClick={handleLogout}>Logout</button>
             </>
           ) : (

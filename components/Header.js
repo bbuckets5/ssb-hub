@@ -4,25 +4,32 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import './Header.css';
 import UserNav from './UserNav';
 
 export default function Header() {
-  const [currentCommunity, setCurrentCommunity] = useState(null);
-  const [counts, setCounts] = useState({});
   const [user, setUser] = useState(null);
+  const [counts, setCounts] = useState({});
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const updateHeaderData = async () => {
       const token = localStorage.getItem('authToken');
+      let currentUser = null;
       if (token) {
         try {
           const res = await fetch('/api/users/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-          if (res.ok) setUser(await res.json());
+          if (res.ok) {
+            currentUser = await res.json();
+            setUser(currentUser);
+          } else {
+            // Bad token, clear it
+            localStorage.removeItem('authToken');
+          }
         } catch (error) {
           console.error('Failed to fetch user', error);
         }
@@ -30,10 +37,10 @@ export default function Header() {
         setUser(null);
       }
 
-      const selectedCommunity = localStorage.getItem('selectedCommunity');
-      if (selectedCommunity) {
-        setCurrentCommunity(selectedCommunity);
-        document.body.className = `${selectedCommunity}-theme`;
+      // Theming is now based on the USER's actual community from the database
+      const community = currentUser?.community || localStorage.getItem('selectedCommunity');
+      if (community) {
+        document.body.className = `${community}-theme`;
         try {
           const res = await fetch('/api/community/counts');
           const data = await res.json();
@@ -43,7 +50,6 @@ export default function Header() {
         }
       } else {
         document.body.className = '';
-        setCurrentCommunity(null);
       }
     };
 
@@ -52,17 +58,18 @@ export default function Header() {
     return () => window.removeEventListener('storage', updateHeaderData);
   }, [pathname]);
 
-  const memberCount = currentCommunity && counts[currentCommunity] !== undefined
-    ? counts[currentCommunity]
+  const memberCount = user?.community && counts[user.community] !== undefined
+    ? counts[user.community]
     : 0;
 
   return (
     <header className="main-header">
       <div className="header-content">
         <div className="header-left">
-          {currentCommunity && (
+          {/* Show community info ONLY if the user has pledged */}
+          {user && user.community && (
             <div className="community-display">
-              <span className="community-name">{currentCommunity.toUpperCase()}</span>
+              <span className="community-name">{user.community.toUpperCase()}</span>
               <span className="community-count">{memberCount.toLocaleString()} members</span>
             </div>
           )}
@@ -78,17 +85,25 @@ export default function Header() {
         </div>
 
         <div className="header-right">
-          {user && (
-            <div className="user-display">
-              {/* --- MODIFIED: Added community theme class to username --- */}
-              <span className={`username ${currentCommunity}-text`}>{user.username}</span>
-              <div className="rax-display">
-                {/* --- MODIFIED: Changed the emoji --- */}
-                <span className="rax-icon">💰</span>
-                <span>{user.rax?.toLocaleString() || 0}</span>
+          {user ? (
+            // If user is logged in...
+            user.community ? (
+              // ...and has a community, show their stats
+              <div className="user-display">
+                <span className={`username ${user.community}-text`}>{user.username}</span>
+                <div className="rax-display">
+                  <span className="rax-icon">💰</span>
+                  <span>{user.rax?.toLocaleString() || 0}</span>
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              // ...but has NO community, show a pledge button
+              <button className="cta-button" onClick={() => router.push('/')}>
+                Choose Your Community
+              </button>
+            )
+          ) : null } {/* If not logged in, show nothing here */}
+          
           <UserNav user={user} />
         </div>
       </div>
