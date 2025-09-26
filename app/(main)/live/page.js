@@ -11,7 +11,6 @@ const ssbStreamers = [
   { name: 'Cheesur', channel: 'cheesur' },
   { name: 'Cuffem', channel: 'cuffem' },
   { name: 'Konvy', channel: 'konvy' },
-  { name: 'N3on', channel: 'n3on' },
   { name: 'ShnaggyHose', channel: 'shnaggyhose' }, // Added ShnaggyHose
 ];
 
