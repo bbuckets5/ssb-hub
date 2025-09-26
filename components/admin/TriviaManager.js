@@ -4,14 +4,19 @@
 import { useState, useEffect } from 'react';
 import './TriviaManager.css';
 
-// --- NEW: A separate component for the Edit Modal ---
+// A separate component for the Edit Modal
 function EditQuestionModal({ question, onClose, onSave }) {
   const [formData, setFormData] = useState({ ...question });
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...formData.options];
     newOptions[index] = value;
-    setFormData({ ...formData, options: newOptions });
+    // Also check if the correct answer needs to be updated if the text changes
+    if (formData.correctAnswer === question.options[index]) {
+      setFormData({ ...formData, options: newOptions, correctAnswer: value });
+    } else {
+      setFormData({ ...formData, options: newOptions });
+    }
   };
   
   const handleCorrectAnswerChange = (option) => {
@@ -83,8 +88,6 @@ export default function TriviaManager() {
   const [processingId, setProcessingId] = useState(null);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [gameTitle, setGameTitle] = useState('');
-
-  // --- NEW: State for the edit modal ---
   const [editingQuestion, setEditingQuestion] = useState(null);
 
   useEffect(() => {
@@ -168,10 +171,11 @@ export default function TriviaManager() {
       return;
     }
     alert(`Creating game "${gameTitle}" with ${selectedQuestions.length} questions.`);
+    // The real API call will go here next
   };
 
-  // --- NEW: Function to save edited question ---
   const handleSaveChanges = async (updatedQuestion) => {
+    setProcessingId(updatedQuestion._id);
     try {
       const token = localStorage.getItem('authToken');
       const res = await fetch(`/api/trivia/admin-questions/${updatedQuestion._id}`, {
@@ -190,14 +194,15 @@ export default function TriviaManager() {
 
       const savedQuestion = await res.json();
       
-      // Update the question in the pending list for instant UI feedback
       setPendingQuestions(current => 
         current.map(q => q._id === savedQuestion._id ? savedQuestion : q)
       );
-      setEditingQuestion(null); // Close the modal
+      setEditingQuestion(null);
 
     } catch (err) {
       alert(`Error: ${err.message}`);
+    } finally {
+        setProcessingId(null);
     }
   };
 
@@ -217,7 +222,6 @@ export default function TriviaManager() {
               <ul className="submission-options">{q.options.map((option, i) => (<li key={i} className={option === q.correctAnswer ? 'correct' : ''}>{option}</li>))}</ul>
               <p className="submitted-by">Submitted by: {q.submittedBy?.username || 'Unknown'}</p>
               <div className="submission-actions">
-                {/* --- NEW: Edit Button --- */}
                 <button className="edit-btn" onClick={() => setEditingQuestion(q)} disabled={processingId === q._id}>Edit</button>
                 <button className="deny-btn" onClick={() => handleUpdateStatus(q._id, 'denied')} disabled={processingId === q._id}>Deny</button>
                 <button className="approve-btn" onClick={() => handleUpdateStatus(q._id, 'approved')} disabled={processingId === q._id}>Approve</button>
@@ -270,7 +274,6 @@ export default function TriviaManager() {
         </form>
       )}
 
-      {/* --- NEW: Render the Edit Modal --- */}
       {editingQuestion && (
         <EditQuestionModal 
           question={editingQuestion}
