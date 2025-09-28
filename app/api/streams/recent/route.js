@@ -9,35 +9,41 @@ export async function GET() {
         const fiveDaysAgo = new Date();
         fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
 
-        // Fetch all VODs from all streamers concurrently
         const allVodsPromises = SSB_STREAMERS.map(channel =>
             fetch(`https://kick.com/api/v2/channels/${channel}/videos`)
-                .then(res => res.json())
+                .then(res => {
+                    // Check if the response was successful
+                    if (!res.ok) {
+                        console.error(`Kick API returned an error for ${channel}: ${res.status}`);
+                        return null; // Return null if the fetch failed
+                    }
+                    return res.json();
+                })
                 .catch(err => {
                     console.error(`Failed to fetch VODs for ${channel}`, err);
-                    return []; // Return empty array on error for a specific channel
+                    return null; // Return null on network error
                 })
         );
         
-        const allVodsArrays = await Promise.all(allVodsPromises);
+        const allVodsResults = await Promise.all(allVodsPromises);
         
-        // Flatten the array of arrays into a single array of VODs
-        const combinedVods = allVodsArrays.flat();
+        // Filter out any null results from failed fetches
+        const successfulVods = allVodsResults.filter(result => result !== null);
+        const combinedVods = successfulVods.flat();
 
-        // Filter for VODs within the last 5 days and add streamer name
         const recentVods = combinedVods.filter(vod => {
             return vod && new Date(vod.created_at) > fiveDaysAgo;
         }).map(vod => ({
+            // Using optional chaining (?.) to safely access properties
             id: vod.id,
             title: vod.session_title,
-            thumbnailUrl: vod.thumbnail.url,
+            thumbnailUrl: vod.thumbnail?.url, // Safe access
             createdAt: vod.created_at,
             duration: vod.duration,
-            streamer: vod.channel.username,
+            streamer: vod.channel?.username, // Safe access
             videoUrl: vod.source,
         }));
 
-        // Sort the final list by date, newest first
         recentVods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         return NextResponse.json(recentVods, { status: 200 });
