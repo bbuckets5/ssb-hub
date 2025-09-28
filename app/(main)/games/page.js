@@ -2,14 +2,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import TriviaGame from "@/components/TriviaGame";
-import QuestionForm from "@/components/QuestionForm"; // Import the new form
+import DailyQuestion from "@/components/DailyQuestion";
+import QuestionForm from "@/components/QuestionForm";
 
 export default function GamesPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('authToken');
     if (token) {
       setIsLoggedIn(true);
@@ -17,11 +16,18 @@ export default function GamesPage() {
   }, []);
 
   return (
-    <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
-      <h1 style={{ fontSize: '2.5rem', color: 'var(--primary-color)' }}>SSB Trivia Royale</h1>
-      <TriviaGame />
+    <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3rem' }}>
+      <div>
+        <h1 style={{ fontSize: '2.5rem', color: 'var(--primary-color)', textAlign: 'center' }}>Question of the Day</h1>
+        <DailyQuestion />
+      </div>
+
+      {/* Placeholder for Leaderboard */}
+      <div style={{width: '100%', maxWidth: '800px'}}>
+        <h2 style={{textAlign: 'center', marginBottom: '1rem'}}>Top Players</h2>
+        <p style={{textAlign: 'center', opacity: '0.7'}}>Leaderboard coming soon...</p>
+      </div>
       
-      {/* Conditionally render the form for logged-in users */}
       {isLoggedIn && <QuestionForm />}
     </div>
   );
