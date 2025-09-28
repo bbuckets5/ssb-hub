@@ -2,8 +2,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import './ClippingTool.css';
 
 export default function ClippingTool({ vodId }) {
@@ -14,32 +12,11 @@ export default function ClippingTool({ vodId }) {
   
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(30); // Default to a 30s clip
-  const [aspectRatio, setAspectRatio] = useState('landscape');
-  
-  // State for FFmpeg processing
-  const ffmpegRef = useRef(new FFmpeg());
-  const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progressMessage, setProgressMessage] = useState('');
+  const [endTime, setEndTime] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Load the FFmpeg engine
-    const loadFFmpeg = async () => {
-      const ffmpeg = ffmpegRef.current;
-      ffmpeg.on('log', ({ message }) => {
-        // You can show logs in the console if you want
-        // console.log(message);
-      });
-      await ffmpeg.load({
-        coreURL: await toBlobURL('/ffmpeg/ffmpeg-core.js', 'text/javascript'),
-        wasmURL: await toBlobURL('/ffmpeg/ffmpeg-core.wasm', 'application/wasm'),
-      });
-      setIsFFmpegLoaded(true);
-    };
-    loadFFmpeg();
-
-    // Fetch the VOD details
     const fetchVodDetails = async () => {
       try {
         const res = await fetch('/api/streams/recent');
@@ -65,65 +42,49 @@ export default function ClippingTool({ vodId }) {
     if (videoRef.current) setEndTime(Math.floor(videoRef.current.currentTime));
   };
 
-  const handleCreateClip = async () => {
-    if (!isFFmpegLoaded) {
-      alert('FFmpeg is not loaded yet. Please wait.');
-      return;
-    }
+  const handleRequestClip = async () => {
     if (endTime <= startTime) {
       alert('End time must be after start time.');
       return;
     }
-
-    setIsProcessing(true);
-    setProgressMessage('Loading video file...');
+    if (!title.trim()) {
+        alert('Please provide a title for your clip.');
+        return;
+    }
     
-    const ffmpeg = ffmpegRef.current;
+    setIsSubmitting(true);
+    setMessage('');
     
     try {
-      // 1. Fetch the video file and write it to FFmpeg's virtual memory
-      await ffmpeg.writeFile('input.mp4', await fetchFile(vod.videoUrl));
-      
-      setProgressMessage('Trimming and formatting...');
+        const token = localStorage.getItem('authToken');
+        if (!token) throw new Error('You must be logged in to request a clip.');
 
-      // 2. Build the FFmpeg command
-      const command = [
-        '-i', 'input.mp4',
-        '-ss', formatTime(startTime),
-        '-to', formatTime(endTime),
-        '-c', 'copy', // Copy codecs to be fast
-      ];
+        const res = await fetch('/api/clipper/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                vodId: vod.id,
+                title,
+                startTime,
+                endTime,
+                videoUrl: vod.videoUrl,
+                streamer: vod.streamer
+            })
+        });
 
-      // Add filter for portrait mode
-      if (aspectRatio === 'portrait') {
-        command.pop(); // Remove '-c copy' because we need to re-encode
-        command.push('-vf', 'crop=ih*9/16:ih'); // Crop to a 9:16 aspect ratio from the center
-      }
-      command.push('output.mp4');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
 
-      // 3. Run the command
-      await ffmpeg.exec(command);
-
-      setProgressMessage('Preparing download...');
-
-      // 4. Read the result
-      const data = await ffmpeg.readFile('output.mp4');
-
-      // 5. Create a URL and trigger the download
-      const blob = new Blob([data.buffer], { type: 'video/mp4' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${title || 'ssb-clip'}.mp4`;
-      a.click();
-      URL.revokeObjectURL(url);
-
-    } catch(err) {
-      console.error(err);
-      alert('An error occurred while creating the clip.');
+        setMessage('Clip request sent successfully!');
+        setTitle(''); // Reset form
+        
+    } catch (err) {
+        setMessage(`Error: ${err.message}`);
     } finally {
-      setIsProcessing(false);
-      setProgressMessage('');
+        setIsSubmitting(false);
     }
   };
 
@@ -139,25 +100,25 @@ export default function ClippingTool({ vodId }) {
       </div>
       <div className="controls-column">
         <div className="controls-wrapper glass">
-          <h2>Create a Clip</h2>
+          <h2>Create a Clip Request</h2>
           <div className="form-group">
             <label htmlFor="clipTitle">Clip Title</label>
-            <input type="text" id="clipTitle" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Funny moment, epic play, etc." />
+            <input 
+              type="text" 
+              id="clipTitle" 
+              value={title} 
+              onChange={(e) => setTitle(e.target.value)} 
+              placeholder="Funny moment, epic play, etc."
+            />
           </div>
           <div className="time-controls">
             <div className="time-box"><label>Start Time</label><span>{formatTime(startTime)}</span><button onClick={handleSetStart}>Set Start</button></div>
             <div className="time-box"><label>End Time</label><span>{formatTime(endTime)}</span><button onClick={handleSetEnd}>Set End</button></div>
           </div>
-          <div className="form-group">
-            <label>Aspect Ratio</label>
-            <div className="aspect-ratio-buttons">
-              <button className={aspectRatio === 'landscape' ? 'active' : ''} onClick={() => setAspectRatio('landscape')}>Landscape</button>
-              <button className={aspectRatio === 'portrait' ? 'active' : ''} onClick={() => setAspectRatio('portrait')}>Portrait</button>
-            </div>
-          </div>
-          <button className="cta-button" onClick={handleCreateClip} disabled={isProcessing || !isFFmpegLoaded}>
-            {isProcessing ? progressMessage : 'Create & Download Clip'}
+          <button className="cta-button" onClick={handleRequestClip} disabled={isSubmitting}>
+            {isSubmitting ? 'Submitting...' : 'Request Clip'}
           </button>
+          {message && <p style={{textAlign: 'center', marginTop: '1rem'}}>{message}</p>}
         </div>
       </div>
     </div>
