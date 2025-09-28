@@ -38,10 +38,16 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: 100,
   },
+  // --- NEW FIELD ADDED ---
+  raxEarned: {
+    type: Number,
+    required: true,
+    default: 100, // Matches the initial Rax balance
+  },
+  // -----------------------
   lastLogin: {
     type: Date,
   },
-  // --- NEW FIELDS ADDED ---
   dailyLikesCount: {
     type: Number,
     default: 0
@@ -49,7 +55,6 @@ const UserSchema = new mongoose.Schema({
   lastLikeDate: {
     type: Date
   },
-  // ------------------------
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

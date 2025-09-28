@@ -1,0 +1,47 @@
+/* components/Leaderboard.css */
+.leaderboard-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--secondary-color);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.leaderboard-item:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard-item .rank {
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 40px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.leaderboard-item .username {
+  font-weight: 600;
+  font-size: 1.1rem;
+  flex-grow: 1; /* Pushes the score to the right */
+}
+
+.leaderboard-item .rax-score {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}

@@ -30,11 +30,9 @@ export async function POST(request, { params }) {
         if (!post) return NextResponse.json({ message: 'Post not found.' }, { status: 404 });
         if (!liker) return NextResponse.json({ message: 'User not found.' }, { status: 404 });
 
-        // --- NEW FIX: This handles old posts where 'likes' might not be an array ---
         if (!Array.isArray(post.likes)) {
-            post.likes = []; // If 'likes' is a number or missing, reset it to an empty array
+            post.likes = [];
         }
-        // ----------------------------------------------------------------------
 
         if (post.likes.includes(userId)) {
             return NextResponse.json({ message: 'You have already liked this post.' }, { status: 409 });
@@ -55,12 +53,16 @@ export async function POST(request, { params }) {
 
             if (liker.dailyLikesCount < DAILY_LIKE_RAX_CAP) {
                 raxAwardedToLiker = 1;
+                // --- MODIFIED: Update rax and raxEarned for the liker ---
                 liker.rax += raxAwardedToLiker;
+                liker.raxEarned += raxAwardedToLiker;
                 liker.dailyLikesCount += 1;
             }
             
             liker.lastLikeDate = new Date();
-            await User.findByIdAndUpdate(post.author, { $inc: { rax: 2 } });
+
+            // --- MODIFIED: Update rax and raxEarned for the author ---
+            await User.findByIdAndUpdate(post.author, { $inc: { rax: 2, raxEarned: 2 } });
         }
         
         await Promise.all([post.save(), liker.save()]);
@@ -79,3 +81,4 @@ export async function POST(request, { params }) {
         return NextResponse.json({ message: 'Server error.' }, { status: 500 });
     }
 }
+

@@ -51,9 +51,9 @@ export async function POST(request) {
         });
         await newPost.save();
         
-        // --- NEW: Award Rax for posting ---
-        await User.findByIdAndUpdate(userId, { $inc: { rax: 5 } });
-        // ---------------------------------
+        // --- MODIFIED: Award Rax to both current balance and lifetime earnings ---
+        await User.findByIdAndUpdate(userId, { $inc: { rax: 5, raxEarned: 5 } });
+        // --------------------------------------------------------------------
         
         const postToSend = await Post.findById(newPost._id).populate('author', 'username community');
 
