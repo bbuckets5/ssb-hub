@@ -12,13 +12,11 @@ export default function FeedPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('authToken');
     if (token) {
       setIsLoggedIn(true);
     }
 
-    // Fetch posts from the database
     const fetchPosts = async () => {
       try {
         const res = await fetch('/api/posts');
@@ -35,15 +33,17 @@ export default function FeedPage() {
     fetchPosts();
   }, []);
 
-  // This function is called by the CreatePost component after a successful API call
   const handleCreatePost = (newPost) => {
-    // Add the new post returned from the API to the top of the feed
     setPosts([newPost, ...posts]);
+  };
+
+  // --- NEW: Function to handle deleting a post from the feed ---
+  const handleDeletePost = (postId) => {
+    setPosts(currentPosts => currentPosts.filter(p => p._id !== postId));
   };
 
   return (
     <div className="feed-page-container">
-      {/* Only show the CreatePost box if the user is logged in */}
       {isLoggedIn && <CreatePost onPostCreated={handleCreatePost} />}
 
       <div className="timeline">
@@ -51,7 +51,7 @@ export default function FeedPage() {
           <p style={{ textAlign: 'center', padding: '2rem' }}>Loading posts...</p>
         ) : (
           posts.map(post => (
-            <PostCard key={post._id} post={post} />
+            <PostCard key={post._id} post={post} onPostDeleted={handleDeletePost} />
           ))
         )}
       </div>
