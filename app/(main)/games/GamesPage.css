@@ -1,35 +1,21 @@
 /* app/(main)/games/GamesPage.css */
 
-.page-container {
+.games-lobby-container {
   max-width: 1000px;
-  margin: 0 auto;
+  margin: 2rem auto;
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem; /* Creates space between sections */
-}
-
-.section {
-  width: 100%;
-}
-
-.page-title {
-  font-size: 2.5rem;
-  color: var(--primary-color);
   text-align: center;
 }
 
-.page-subtitle {
+.games-lobby-container h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+}
+
+.games-lobby-container p {
   font-size: 1.1rem;
   opacity: 0.8;
   margin-bottom: 3rem;
-  text-align: center;
-}
-
-.section-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
 }
 
 .game-sessions-grid {
@@ -65,9 +51,4 @@
   justify-content: space-between;
   font-size: 0.9rem;
   opacity: 0.7;
-}
-
-.error-text {
-  text-align: center;
-  color: #ff8a8a;
 }
