@@ -11,7 +11,6 @@ function EditQuestionModal({ question, onClose, onSave }) {
   const handleOptionChange = (index, value) => {
     const newOptions = [...formData.options];
     newOptions[index] = value;
-    // Also check if the correct answer needs to be updated if the text changes
     if (formData.correctAnswer === question.options[index]) {
       setFormData({ ...formData, options: newOptions, correctAnswer: value });
     } else {
@@ -89,6 +88,10 @@ export default function TriviaManager() {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [gameTitle, setGameTitle] = useState('');
   const [editingQuestion, setEditingQuestion] = useState(null);
+  
+  // State for the create game form
+  const [isCreatingGame, setIsCreatingGame] = useState(false);
+  const [gameCreationMessage, setGameCreationMessage] = useState('');
 
   useEffect(() => {
     const fetchAllQuestions = async () => {
@@ -167,11 +170,43 @@ export default function TriviaManager() {
   const handleCreateGame = async (e) => {
     e.preventDefault();
     if (!gameTitle.trim() || selectedQuestions.length === 0) {
-      alert('Please provide a title and select at least one question.');
+      setGameCreationMessage('Please provide a title and select at least one question.');
       return;
     }
-    alert(`Creating game "${gameTitle}" with ${selectedQuestions.length} questions.`);
-    // The real API call will go here next
+    
+    setIsCreatingGame(true);
+    setGameCreationMessage('');
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch('/api/trivia/game-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: gameTitle,
+          questions: selectedQuestions
+        })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to create game session.');
+      }
+
+      setGameCreationMessage('Game created successfully!');
+      // Reset form
+      setGameTitle('');
+      setSelectedQuestions([]);
+      // We might want to refresh a list of game sessions here in the future
+      
+    } catch (err) {
+      setGameCreationMessage(`Error: ${err.message}`);
+    } finally {
+      setIsCreatingGame(false);
+    }
   };
 
   const handleSaveChanges = async (updatedQuestion) => {
@@ -202,7 +237,7 @@ export default function TriviaManager() {
     } catch (err) {
       alert(`Error: ${err.message}`);
     } finally {
-        setProcessingId(null);
+      setProcessingId(null);
     }
   };
 
@@ -266,10 +301,11 @@ export default function TriviaManager() {
             <button 
               type="submit" 
               className="cta-button"
-              disabled={!gameTitle.trim() || selectedQuestions.length === 0}
+              disabled={isCreatingGame || !gameTitle.trim() || selectedQuestions.length === 0}
             >
-              Create Game
+              {isCreatingGame ? 'Creating...' : 'Create Game'}
             </button>
+            {gameCreationMessage && <p style={{marginTop: '1rem'}}>{gameCreationMessage}</p>}
           </div>
         </form>
       )}
