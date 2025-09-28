@@ -13,19 +13,23 @@ export async function GET() {
             fetch(`https://kick.com/api/v2/channels/${channel}/videos`)
                 .then(res => {
                     if (!res.ok) {
-                        console.error(`Kick API returned an error for ${channel}: ${res.status}`);
+                        console.error(`Kick API error for ${channel}: ${res.status}`);
                         return null;
                     }
                     return res.json();
                 })
-                // --- NEW: This step "opens the envelope" to get the actual video list ---
+                // --- MODIFIED: More intelligent data processing ---
                 .then(data => {
-                    if (!data) return [];
-                    // Kick API might return the array directly, or nested under a 'videos' key
-                    return data.videos || data || []; 
+                    if (!data || !data.videos) return []; // If no data or no videos array, return empty
+                    
+                    // Manually attach the top-level channel info to each video
+                    return data.videos.map(video => ({
+                        ...video,
+                        channel: data.channel // Ensures every video has the channel info
+                    }));
                 })
                 .catch(err => {
-                    console.error(`Failed to fetch VODs for ${channel}`, err);
+                    console.error(`Failed to process VODs for ${channel}`, err);
                     return [];
                 })
         );
