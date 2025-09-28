@@ -2,34 +2,56 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import DailyQuestion from "@/components/DailyQuestion";
-import QuestionForm from "@/components/QuestionForm";
-import Leaderboard from "@/components/Leaderboard"; // Import the new component
+import Link from 'next/link';
+import './GamesPage.css';
 
 export default function GamesPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [gameSessions, setGameSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    const fetchGameSessions = async () => {
+      try {
+        const res = await fetch('/api/trivia/game-sessions');
+        if (!res.ok) {
+          throw new Error('Failed to fetch game sessions.');
+        }
+        setGameSessions(await res.json());
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchGameSessions();
   }, []);
 
   return (
-    <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3rem' }}>
-      <div>
-        <h1 style={{ fontSize: '2.5rem', color: 'var(--primary-color)', textAlign: 'center', marginBottom: '1rem' }}>Question of the Day</h1>
-        <DailyQuestion />
-      </div>
-
-      {/* Replace the placeholder with our new component */}
-      <div>
-        <h2 style={{textAlign: 'center', marginBottom: '1rem'}}>Top Players</h2>
-        <Leaderboard />
-      </div>
+    <div className="games-lobby-container">
+      <h1>Trivia Royale</h1>
+      <p>Choose a game session to play.</p>
       
-      {isLoggedIn && <QuestionForm />}
+      {isLoading && <p>Loading games...</p>}
+      {error && <p className="error-text">Error: {error}</p>}
+      
+      {!isLoading && !error && (
+        <div className="game-sessions-grid">
+          {gameSessions.length === 0 ? (
+            <p>No active games right now. Check back later!</p>
+          ) : (
+            gameSessions.map(session => (
+              <Link key={session._id} href={`/games/${session._id}`} className="game-card">
+                <h2>{session.title}</h2>
+                <div className="game-card-details">
+                  <span>{session.questions.length} Questions</span>
+                  <span>Created by: {session.createdBy?.username || 'Admin'}</span>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }
