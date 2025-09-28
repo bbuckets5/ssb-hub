@@ -3,6 +3,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import './ClippingTool.css';
 
 export default function ClippingTool({ vodId }) {
@@ -13,20 +15,36 @@ export default function ClippingTool({ vodId }) {
   
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const [endTime, setEndTime] = useState(30);
+  const [aspectRatio, setAspectRatio] = useState('landscape');
+  
+  const ffmpegRef = useRef(new FFmpeg());
+  const [isFFmpegLoaded, setIsFFmpegLoaded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progressMessage, setProgressMessage] = useState('');
 
   useEffect(() => {
+    const loadFFmpeg = async () => {
+      const ffmpeg = ffmpegRef.current;
+      ffmpeg.on('log', ({ message }) => {
+        // console.log(message); 
+      });
+      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+      });
+      setIsFFmpegLoaded(true);
+    };
+    loadFFmpeg();
+
     const fetchVodDetails = async () => {
       try {
         const res = await fetch('/api/streams/recent');
         if (!res.ok) throw new Error('Could not fetch VODs');
-        
         const groupedVods = await res.json();
         const allVods = Object.values(groupedVods).flat();
         const currentVod = allVods.find(v => v.id.toString() === vodId);
-
         if (!currentVod) throw new Error('VOD not found.');
         setVod(currentVod);
       } catch (err) {
@@ -43,9 +61,7 @@ export default function ClippingTool({ vodId }) {
       const hls = new Hls();
       hls.loadSource(vod.videoUrl);
       hls.attachMedia(videoRef.current);
-      return () => {
-        hls.destroy();
-      };
+      return () => hls.destroy();
     } else if (videoRef.current && vod?.videoUrl) {
       videoRef.current.src = vod.videoUrl;
     }
@@ -59,50 +75,58 @@ export default function ClippingTool({ vodId }) {
     if (videoRef.current) setEndTime(Math.floor(videoRef.current.currentTime));
   };
 
-  const handleRequestClip = async () => {
+  const handleCreateClip = async () => {
+    if (!isFFmpegLoaded) {
+      alert('Clipping engine is still loading. Please wait a moment.');
+      return;
+    }
     if (endTime <= startTime) {
       alert('End time must be after start time.');
       return;
     }
-    if (!title.trim()) {
-      alert('Please provide a title for your clip.');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setMessage('');
+
+    setIsProcessing(true);
+    const ffmpeg = ffmpegRef.current;
     
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('You must be logged in to request a clip.');
-
-      const res = await fetch('/api/clipper/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        // This body now includes all required fields
-        body: JSON.stringify({
-          vodId: vod.id,
-          title,
-          startTime,
-          endTime,
-          videoUrl: vod.videoUrl,
-          streamer: vod.streamer
-        })
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      setMessage('Clip request sent successfully!');
-      setTitle('');
+      setProgressMessage('Loading video file...');
+      await ffmpeg.writeFile('input.mp4', await fetchFile(vod.videoUrl));
       
-    } catch (err) {
-      setMessage(`Error: ${err.message}`);
+      setProgressMessage('Trimming and formatting...');
+      
+      const command = [
+        '-i', 'input.mp4',
+        '-ss', formatTime(startTime),
+        '-to', formatTime(endTime),
+        '-c:v', 'libx264',
+        '-preset', 'superfast',
+      ];
+
+      if (aspectRatio === 'portrait') {
+        command.push('-vf', 'crop=ih*9/16:ih');
+      }
+      command.push('output.mp4');
+
+      await ffmpeg.exec(command);
+      setProgressMessage('Preparing download...');
+      const data = await ffmpeg.readFile('output.mp4');
+
+      const blob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.trim().replace(/ /g, '_') || 'ssb-clip'}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+    } catch(err) {
+      console.error(err);
+      alert('An error occurred while creating the clip.');
     } finally {
-      setIsSubmitting(false);
+      setIsProcessing(false);
+      setProgressMessage('');
     }
   };
 
@@ -118,33 +142,25 @@ export default function ClippingTool({ vodId }) {
       </div>
       <div className="controls-column">
         <div className="controls-wrapper glass">
-          <h2>Create a Clip Request</h2>
+          <h2>Create & Download Clip</h2>
           <div className="form-group">
             <label htmlFor="clipTitle">Clip Title</label>
-            <input 
-              type="text" 
-              id="clipTitle" 
-              value={title} 
-              onChange={(e) => setTitle(e.target.value)} 
-              placeholder="Funny moment, epic play, etc."
-            />
+            <input type="text" id="clipTitle" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Funny moment, epic play, etc." />
           </div>
           <div className="time-controls">
-            <div className="time-box">
-              <label>Start Time</label>
-              <span>{formatTime(startTime)}</span>
-              <button onClick={handleSetStart}>Set Start</button>
-            </div>
-            <div className="time-box">
-              <label>End Time</label>
-              <span>{formatTime(endTime)}</span>
-              <button onClick={handleSetEnd}>Set End</button>
+            <div className="time-box"><label>Start Time</label><span>{formatTime(startTime)}</span><button onClick={handleSetStart}>Set Start</button></div>
+            <div className="time-box"><label>End Time</label><span>{formatTime(endTime)}</span><button onClick={handleSetEnd}>Set End</button></div>
+          </div>
+          <div className="form-group">
+            <label>Aspect Ratio</label>
+            <div className="aspect-ratio-buttons">
+              <button className={aspectRatio === 'landscape' ? 'active' : ''} onClick={() => setAspectRatio('landscape')}>Landscape</button>
+              <button className={aspectRatio === 'portrait' ? 'active' : ''} onClick={() => setAspectRatio('portrait')}>Portrait</button>
             </div>
           </div>
-          <button className="cta-button" onClick={handleRequestClip} disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Request Clip'}
+          <button className="cta-button" onClick={handleCreateClip} disabled={isProcessing || !isFFmpegLoaded}>
+            {isProcessing ? progressMessage : (isFFmpegLoaded ? 'Create & Download Clip' : 'Loading Engine...')}
           </button>
-          {message && <p style={{textAlign: 'center', marginTop: '1rem'}}>{message}</p>}
         </div>
       </div>
     </div>
