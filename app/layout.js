@@ -8,12 +8,10 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // This script runs instantly to set the theme and prevent the flash
   const themeScript = `
     (function() {
       try {
         const community = localStorage.getItem('selectedCommunity');
-        // Clear any existing theme classes first
         document.documentElement.className = '';
         if (community) {
           document.documentElement.classList.add(community + '-theme');
@@ -23,12 +21,15 @@ export default function RootLayout({ children }) {
   `;
 
   return (
-    // ADDED: suppressHydrationWarning to the html tag
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" 
+        {/* --- MODIFIED: Updated to the latest stable Font Awesome version --- */}
+        <link 
+          rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" 
+          crossOrigin="anonymous" 
+          referrerPolicy="no-referrer" 
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
