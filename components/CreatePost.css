@@ -16,11 +16,68 @@
   padding: 0.5rem 0;
 }
 
+/* --- NEW: Image Preview Styles --- */
+.image-preview {
+  position: relative;
+  margin-top: 1rem;
+  max-width: 100%;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* -------------------------------- */
+
+
 .create-post-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 0.5rem;
 }
+
+/* --- NEW: Action Icons --- */
+.action-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: rgba(var(--primary-color-rgb, 233, 30, 99), 0.1);
+}
+/* ------------------------- */
+
 
 .create-post-actions .cta-button {
   background-color: var(--primary-color);
@@ -29,7 +86,7 @@
   padding: 0.6rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 9999px; /* Pill shape */
+  border-radius: 9999px;
   cursor: pointer;
   transition: filter 0.2s;
 }
@@ -41,4 +98,9 @@
 .create-post-actions .cta-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.error-message {
+  color: #ff8a8a;
+  font-size: 0.9rem;
 }

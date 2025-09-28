@@ -10,13 +10,15 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
     "framer-motion": "^12.23.18",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mongoose": "^8.18.2",
     "next": "15.5.3",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-linkify": "^1.0.0-alpha"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

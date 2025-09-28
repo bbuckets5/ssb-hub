@@ -14,12 +14,15 @@ const PostSchema = new mongoose.Schema({
     trim: true,
     maxlength: [280, 'Post cannot be more than 280 characters'],
   },
-  // --- MODIFIED: 'likes' is now an array of User references ---
+  // --- NEW FIELD ADDED ---
+  imageUrl: {
+    type: String, // This will store the URL from Cloudinary
+  },
+  // -----------------------
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  // -----------------------------------------------------------
   community: {
     type: String,
     enum: ['ytg', 'bau', 'arl', 'ktf', 'shniggers'],

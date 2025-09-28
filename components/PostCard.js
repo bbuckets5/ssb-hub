@@ -2,7 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Corrected import
+import { jwtDecode } from 'jwt-decode';
+import Linkify from 'react-linkify'; // 1. Import the Linkify component
 import './PostCard.css';
 
 export default function PostCard({ post }) {
@@ -23,7 +24,6 @@ export default function PostCard({ post }) {
           setIsLiked(true);
         }
       } catch (err) {
-        // This can happen if the token is invalid or expired
         console.error('Invalid token:', err);
       }
     }
@@ -40,9 +40,7 @@ export default function PostCard({ post }) {
 
       const res = await fetch(`/api/posts/${post._id}/like`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       
       const data = await res.json();
@@ -76,7 +74,18 @@ export default function PostCard({ post }) {
         </span>
         <span className="post-timestamp">· {postDate}</span>
       </div>
-      <p className="post-content">{post.content}</p>
+      
+      {/* 2. Wrap the post content with Linkify */}
+      <p className="post-content">
+        <Linkify componentDecorator={(decoratedHref, decoratedText, key) => (
+          <a target="_blank" rel="noopener noreferrer" href={decoratedHref} key={key} className="post-link">
+            {decoratedText}
+          </a>
+        )}>
+          {post.content}
+        </Linkify>
+      </p>
+
       <div className="post-actions">
         <button 
           className={`action-button ${isLiked ? 'liked' : ''}`}
