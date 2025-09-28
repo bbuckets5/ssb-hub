@@ -23,11 +23,9 @@ export default function ClippingTool({ vodId }) {
         const res = await fetch('/api/streams/recent');
         if (!res.ok) throw new Error('Could not fetch VODs');
         
-        // --- MODIFIED: Correctly handle the grouped data structure ---
         const groupedVods = await res.json();
-        const allVods = Object.values(groupedVods).flat(); // Combine all vods into one array
+        const allVods = Object.values(groupedVods).flat();
         const currentVod = allVods.find(v => v.id.toString() === vodId);
-        // -----------------------------------------------------------
 
         if (!currentVod) throw new Error('VOD not found.');
         setVod(currentVod);
