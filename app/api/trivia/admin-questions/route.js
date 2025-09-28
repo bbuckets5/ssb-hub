@@ -10,18 +10,17 @@ export async function GET(request) {
     try {
         await requireAdmin(); // Secure the route for admins only
 
-        // Get the search parameters from the URL (e.g., ?status=approved)
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
 
         const filter = {};
-        // If a status is provided in the URL, add it to our database query
         if (status) {
             filter.status = status;
         }
 
         const questions = await Question.find(filter)
-            .populate('submittedBy', 'username')
+            // --- MODIFIED: Now fetches the user's community as well ---
+            .populate('submittedBy', 'username community')
             .sort({ createdAt: -1 });
 
         return NextResponse.json(questions, { status: 200 });

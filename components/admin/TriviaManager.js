@@ -89,7 +89,6 @@ export default function TriviaManager() {
   const [gameTitle, setGameTitle] = useState('');
   const [editingQuestion, setEditingQuestion] = useState(null);
   
-  // State for the create game form
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [gameCreationMessage, setGameCreationMessage] = useState('');
 
@@ -197,10 +196,8 @@ export default function TriviaManager() {
       }
 
       setGameCreationMessage('Game created successfully!');
-      // Reset form
       setGameTitle('');
       setSelectedQuestions([]);
-      // We might want to refresh a list of game sessions here in the future
       
     } catch (err) {
       setGameCreationMessage(`Error: ${err.message}`);
@@ -237,7 +234,7 @@ export default function TriviaManager() {
     } catch (err) {
       alert(`Error: ${err.message}`);
     } finally {
-      setProcessingId(null);
+        setProcessingId(null);
     }
   };
 
