@@ -15,13 +15,11 @@ export default function GamesPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('authToken');
     if (token) {
       setIsLoggedIn(true);
     }
 
-    // Fetch available game sessions
     const fetchGameSessions = async () => {
       try {
         const res = await fetch('/api/trivia/game-sessions');
