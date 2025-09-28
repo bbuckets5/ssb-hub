@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Hls from 'hls.js'; // 1. Import the HLS.js library
+import Hls from 'hls.js';
 import './ClippingTool.css';
 
 export default function ClippingTool({ vodId }) {
@@ -35,7 +35,6 @@ export default function ClippingTool({ vodId }) {
     fetchVodDetails();
   }, [vodId]);
 
-  // --- 2. NEW: This useEffect handles loading the video with HLS.js ---
   useEffect(() => {
     if (videoRef.current && vod?.videoUrl && Hls.isSupported()) {
       const hls = new Hls();
@@ -45,11 +44,9 @@ export default function ClippingTool({ vodId }) {
         hls.destroy();
       };
     } else if (videoRef.current && vod?.videoUrl) {
-      // Fallback for browsers that support HLS natively
       videoRef.current.src = vod.videoUrl;
     }
-  }, [vod]); // This runs whenever the VOD data is loaded
-  // ----------------------------------------------------------------
+  }, [vod]);
 
   const handleSetStart = () => {
     if (videoRef.current) setStartTime(Math.floor(videoRef.current.currentTime));
@@ -60,7 +57,49 @@ export default function ClippingTool({ vodId }) {
   };
 
   const handleRequestClip = async () => {
-    // ... (This function remains the same)
+    if (endTime <= startTime) {
+      alert('End time must be after start time.');
+      return;
+    }
+    if (!title.trim()) {
+        alert('Please provide a title for your clip.');
+        return;
+    }
+    
+    setIsSubmitting(true);
+    setMessage('');
+    
+    try {
+        const token = localStorage.getItem('authToken');
+        if (!token) throw new Error('You must be logged in to request a clip.');
+
+        const res = await fetch('/api/clipper/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                vodId: vod.id,
+                title,
+                startTime,
+                endTime,
+                videoUrl: vod.videoUrl,
+                streamer: vod.streamer
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        setMessage('Clip request sent successfully!');
+        setTitle('');
+        
+    } catch (err) {
+        setMessage(`Error: ${err.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
   const formatTime = (seconds) => new Date(seconds * 1000).toISOString().substr(11, 8);
@@ -71,7 +110,6 @@ export default function ClippingTool({ vodId }) {
   return (
     <div className="clipper-container">
       <div className="video-player-column">
-        {/* 3. The video tag itself no longer needs a src prop here */}
         <video ref={videoRef} controls className="main-video-player"></video>
       </div>
       <div className="controls-column">
@@ -88,8 +126,16 @@ export default function ClippingTool({ vodId }) {
             />
           </div>
           <div className="time-controls">
-            <div className="time-box"><label>Start Time</label><span>{formatTime(startTime)}</span><button onClick={handleSetStart}>Set Start</button></div>
-            <div className="time-box"><label>End Time</label><span>{formatTime(endTime)}</span><button onClick={handleSetEnd}>Set End</button></div>
+            <div className="time-box">
+              <label>Start Time</label>
+              <span>{formatTime(startTime)}</span>
+              <button onClick={handleSetStart}>Set Start</button>
+            </div>
+            <div className="time-box">
+              <label>End Time</label>
+              <span>{formatTime(endTime)}</span>
+              <button onClick={handleSetEnd}>Set End</button>
+            </div>
           </div>
           <button className="cta-button" onClick={handleRequestClip} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Request Clip'}
