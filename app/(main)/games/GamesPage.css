@@ -6,11 +6,15 @@
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 3rem; /* Creates space between sections */
+  gap: 3rem;
 }
 
 .section {
   width: 100%;
+  /* --- NEW: These lines will center the content inside each section --- */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .page-title {
@@ -36,6 +40,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+  width: 100%; /* Ensure grid takes full width of the section */
 }
 
 .game-card {
@@ -49,7 +54,7 @@
 }
 
 .game-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-px);
   border-color: var(--primary-color);
   box-shadow: 0 0 20px -5px var(--primary-color);
 }
