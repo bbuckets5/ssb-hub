@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import './ClipperPage.css'; // We will create this file next
+import './ClipperPage.css';
 
 export default function ClipperPage() {
   const [vods, setVods] = useState([]);
@@ -51,19 +51,26 @@ export default function ClipperPage() {
           {vods.length === 0 ? (
             <p>No recent streams found.</p>
           ) : (
-            vods.map(vod => (
-              // This link will eventually go to our clipping tool for that specific video
-              <Link key={vod.id} href={`/clipper/${vod.id}`} className="vod-card">
-                <div className="thumbnail-container">
-                  <img src={vod.thumbnailUrl} alt={vod.title} className="vod-thumbnail" />
-                  <span className="vod-duration">{formatDuration(vod.duration)}</span>
-                </div>
-                <div className="vod-info">
-                  <h3 className="vod-title">{vod.title}</h3>
-                  <p className={`streamer-name ${vod.streamer.toLowerCase()}-text`}>{vod.streamer}</p>
-                </div>
-              </Link>
-            ))
+            vods.map(vod => {
+              // --- MODIFIED: Added a safety check for the streamer name ---
+              const streamerClass = vod.streamer ? `${vod.streamer.toLowerCase()}-text` : '';
+
+              return (
+                <Link key={vod.id} href={`/clipper/${vod.id}`} className="vod-card">
+                  <div className="thumbnail-container">
+                    <img src={vod.thumbnailUrl} alt={vod.title || 'Stream thumbnail'} className="vod-thumbnail" />
+                    <span className="vod-duration">{formatDuration(vod.duration)}</span>
+                  </div>
+                  <div className="vod-info">
+                    <h3 className="vod-title">{vod.title || 'Untitled Stream'}</h3>
+                    {/* --- MODIFIED: Added a fallback for the streamer name --- */}
+                    <p className={`streamer-name ${streamerClass}`}>
+                      {vod.streamer || 'Unknown Streamer'}
+                    </p>
+                  </div>
+                </Link>
+              )
+            })
           )}
         </div>
       )}
