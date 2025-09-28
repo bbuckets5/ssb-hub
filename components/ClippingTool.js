@@ -82,6 +82,7 @@ export default function ClippingTool({ vodId }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        // This body now includes all required fields
         body: JSON.stringify({
           vodId: vod.id,
           title,
