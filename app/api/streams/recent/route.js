@@ -12,35 +12,37 @@ export async function GET() {
         const allVodsPromises = SSB_STREAMERS.map(channel =>
             fetch(`https://kick.com/api/v2/channels/${channel}/videos`)
                 .then(res => {
-                    // Check if the response was successful
                     if (!res.ok) {
                         console.error(`Kick API returned an error for ${channel}: ${res.status}`);
-                        return null; // Return null if the fetch failed
+                        return null;
                     }
                     return res.json();
                 })
+                // --- NEW: This step "opens the envelope" to get the actual video list ---
+                .then(data => {
+                    if (!data) return [];
+                    // Kick API might return the array directly, or nested under a 'videos' key
+                    return data.videos || data || []; 
+                })
                 .catch(err => {
                     console.error(`Failed to fetch VODs for ${channel}`, err);
-                    return null; // Return null on network error
+                    return [];
                 })
         );
         
-        const allVodsResults = await Promise.all(allVodsPromises);
+        const allVodsArrays = await Promise.all(allVodsPromises);
         
-        // Filter out any null results from failed fetches
-        const successfulVods = allVodsResults.filter(result => result !== null);
-        const combinedVods = successfulVods.flat();
+        const combinedVods = allVodsArrays.flat();
 
         const recentVods = combinedVods.filter(vod => {
             return vod && new Date(vod.created_at) > fiveDaysAgo;
         }).map(vod => ({
-            // Using optional chaining (?.) to safely access properties
             id: vod.id,
             title: vod.session_title,
-            thumbnailUrl: vod.thumbnail?.url, // Safe access
+            thumbnailUrl: vod.thumbnail?.url,
             createdAt: vod.created_at,
             duration: vod.duration,
-            streamer: vod.channel?.username, // Safe access
+            streamer: vod.channel?.username,
             videoUrl: vod.source,
         }));
 
