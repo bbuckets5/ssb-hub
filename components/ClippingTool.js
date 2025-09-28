@@ -22,8 +22,13 @@ export default function ClippingTool({ vodId }) {
       try {
         const res = await fetch('/api/streams/recent');
         if (!res.ok) throw new Error('Could not fetch VODs');
-        const vods = await res.json();
-        const currentVod = vods.find(v => v.id.toString() === vodId);
+        
+        // --- MODIFIED: Correctly handle the grouped data structure ---
+        const groupedVods = await res.json();
+        const allVods = Object.values(groupedVods).flat(); // Combine all vods into one array
+        const currentVod = allVods.find(v => v.id.toString() === vodId);
+        // -----------------------------------------------------------
+
         if (!currentVod) throw new Error('VOD not found.');
         setVod(currentVod);
       } catch (err) {
@@ -62,43 +67,43 @@ export default function ClippingTool({ vodId }) {
       return;
     }
     if (!title.trim()) {
-        alert('Please provide a title for your clip.');
-        return;
+      alert('Please provide a title for your clip.');
+      return;
     }
     
     setIsSubmitting(true);
     setMessage('');
     
     try {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('You must be logged in to request a clip.');
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('You must be logged in to request a clip.');
 
-        const res = await fetch('/api/clipper/create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                vodId: vod.id,
-                title,
-                startTime,
-                endTime,
-                videoUrl: vod.videoUrl,
-                streamer: vod.streamer
-            })
-        });
+      const res = await fetch('/api/clipper/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          vodId: vod.id,
+          title,
+          startTime,
+          endTime,
+          videoUrl: vod.videoUrl,
+          streamer: vod.streamer
+        })
+      });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
 
-        setMessage('Clip request sent successfully!');
-        setTitle('');
-        
+      setMessage('Clip request sent successfully!');
+      setTitle('');
+      
     } catch (err) {
-        setMessage(`Error: ${err.message}`);
+      setMessage(`Error: ${err.message}`);
     } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
