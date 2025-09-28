@@ -26,9 +26,7 @@ export default function ClippingTool({ vodId }) {
   useEffect(() => {
     const loadFFmpeg = async () => {
       const ffmpeg = ffmpegRef.current;
-      ffmpeg.on('log', ({ message }) => {
-        // console.log(message); 
-      });
+      ffmpeg.on('log', ({ message }) => {});
       const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd'
       await ffmpeg.load({
         coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
@@ -89,8 +87,12 @@ export default function ClippingTool({ vodId }) {
     const ffmpeg = ffmpegRef.current;
     
     try {
-      setProgressMessage('Loading video file...');
-      await ffmpeg.writeFile('input.mp4', await fetchFile(vod.videoUrl));
+      setProgressMessage('Loading video file via proxy...');
+      
+      // --- MODIFIED: Use our proxy API to fetch the video file ---
+      const proxyUrl = `/api/proxy?url=${encodeURIComponent(vod.videoUrl)}`;
+      await ffmpeg.writeFile('input.mp4', await fetchFile(proxyUrl));
+      // -----------------------------------------------------------
       
       setProgressMessage('Trimming and formatting...');
       
