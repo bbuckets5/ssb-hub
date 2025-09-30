@@ -7,7 +7,9 @@ export default function MainLayout({ children }) {
   return (
     <>
       <Header />
-      {children}
+      <main>
+        {children}
+      </main>
       <Footer />
     </>
   );
