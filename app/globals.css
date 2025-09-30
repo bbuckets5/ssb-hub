@@ -45,8 +45,7 @@ a {
 .ktf-text { color: #dc3545 !important; }
 .shniggers-text { color: #6f42c1 !important; }
 
-
-/* --- NEW: Themed Background Logos --- */
+/* --- Themed Background Logos --- */
 main::before {
     content: "";
     position: fixed;
@@ -57,21 +56,21 @@ main::before {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 40%;
-    opacity: 0.05; /* Very dim */
-    z-index: -1; /* Place it behind all content */
+    opacity: 0.05;
+    z-index: -1;
     transition: background-image 0.5s ease-in-out;
 }
 
-/* Set the specific logo for each theme */
+/* --- MODIFIED: All filenames are now lowercase --- */
 .ytg-theme main::before {
-    background-image: url('/logos/YTG.png');
+    background-image: url('/logos/ytg.png');
 }
 .arl-theme main::before {
-    background-image: url('/logos/ARL.png');
+    background-image: url('/logos/arl.png');
 }
 .ktf-theme main::before {
-    background-image: url('/logos/KTF.png');
+    background-image: url('/logos/ktf.png');
 }
 .shniggers-theme main::before {
-    background-image: url('/logos/Shniggers.png');
+    background-image: url('/logos/shniggers.png');
 }
