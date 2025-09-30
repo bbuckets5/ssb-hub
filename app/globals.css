@@ -38,10 +38,40 @@ a {
 .ktf-theme { --primary-color: #dc3545; }
 .shniggers-theme { --primary-color: #6f42c1; }
 
-/* --- NEW: Global Username Theme Colors --- */
-/* By placing these here, they are available to all components */
+/* --- Global Username Theme Colors --- */
 .ytg-text { color: #ffc700 !important; }
 .bau-text { color: #007bff !important; }
 .arl-text { color: #28a745 !important; }
 .ktf-text { color: #dc3545 !important; }
 .shniggers-text { color: #6f42c1 !important; }
+
+
+/* --- NEW: Themed Background Logos --- */
+main::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 40%;
+    opacity: 0.05; /* Very dim */
+    z-index: -1; /* Place it behind all content */
+    transition: background-image 0.5s ease-in-out;
+}
+
+/* Set the specific logo for each theme */
+.ytg-theme main::before {
+    background-image: url('/logos/YTG.png');
+}
+.arl-theme main::before {
+    background-image: url('/logos/ARL.png');
+}
+.ktf-theme main::before {
+    background-image: url('/logos/KTF.png');
+}
+.shniggers-theme main::before {
+    background-image: url('/logos/Shniggers.png');
+}
