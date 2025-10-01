@@ -26,9 +26,8 @@ body {
   transition: --primary-color 0.3s ease;
 }
 
-/* --- NEW: Style for the main content area --- */
 main {
-    position: relative; /* This is needed for the background z-index to work */
+    position: relative;
     z-index: 1;
 }
 
@@ -63,19 +62,20 @@ main::before {
     background-position: center center;
     background-size: 40%;
     opacity: 0.05;
-    z-index: -1; /* This places it behind the main content */
+    z-index: -1;
     transition: background-image 0.5s ease-in-out;
 }
 
+/* --- MODIFIED: Filenames now match your capitalized image files --- */
 .ytg-theme main::before {
-    background-image: url('/logos/ytg.png');
+    background-image: url('/logos/Ytg.png');
 }
 .arl-theme main::before {
-    background-image: url('/logos/arl.png');
+    background-image: url('/logos/Arl.png');
 }
 .ktf-theme main::before {
-    background-image: url('/logos/ktf.png');
+    background-image: url('/logos/Ktf.png');
 }
 .shniggers-theme main::before {
-    background-image: url('/logos/shniggers.png');
+    background-image: url('/logos/Shniggers.png');
 }
