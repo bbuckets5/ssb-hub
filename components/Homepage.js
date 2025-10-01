@@ -77,7 +77,6 @@ export default function Homepage() {
       <div onClick={() => handleCommunitySelect('bau')} className="community-card bau">
         <div className="card-content">
           <img src="/logos/Bau-logo.png" alt="BAU Logo" />
-          <h2>BAU</h2> 
         </div>
       </div>
       <div onClick={() => handleCommunitySelect('arl')} className="community-card arl">
