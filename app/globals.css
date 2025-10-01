@@ -63,7 +63,7 @@ main::before {
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed; /* Keep the image centered on scroll */
-    background-size: 80%;
+    background-size: 65%;
     opacity: 0.05;
     z-index: -1; /* Places it behind the content inside <main> */
     transition: background-image 0.5s ease-in-out;

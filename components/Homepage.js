@@ -1,5 +1,4 @@
 // components/Homepage.js
-
 'use client';
 
 import { useEffect } from 'react';
@@ -71,20 +70,32 @@ export default function Homepage() {
     <div className="homepage-container">
       <div className="grid-background"></div>
       <div onClick={() => handleCommunitySelect('ytg')} className="community-card ytg">
-        <div className="card-content"><h2>YTG</h2></div>
+        <div className="card-content">
+          <img src="/logos/Ytg-logo.png" alt="YTG Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('bau')} className="community-card bau">
-        <div className="card-content"><h2>BAU</h2></div>
+        <div className="card-content">
+          {/* Add bau.png to /public/logos when you have it */}
+          <h2>BAU</h2> 
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('arl')} className="community-card arl">
-        <div className="card-content"><h2>ARL</h2></div>
+        <div className="card-content">
+          <img src="/logos/Arl-logo.png" alt="ARL Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('ktf')} className="community-card ktf">
-        <div className="card-content"><h2>KTF</h2></div>
+        <div className="card-content">
+          <img src="/logos/Ktf-logo.png" alt="KTF Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('shniggers')} className="community-card shniggers">
-        <div className="card-content"><h2>SHNIGGERS</h2></div>
+        <div className="card-content">
+          <img src="/logos/Shniggers-logo.png" alt="Shniggers Logo" />
+        </div>
       </div>
     </div>
   );
 }
+
