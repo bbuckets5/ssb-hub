@@ -70,14 +70,14 @@ main::before {
 }
 
 .ytg-theme main::before {
-    background-image: url('/logos/Ytg.png');
+    background-image: url('/logos/ytg.png');
 }
 .arl-theme main::before {
-    background-image: url('/logos/Arl.png');
+    background-image: url('/logos/arl.png');
 }
 .ktf-theme main::before {
-    background-image: url('/logos/Ktf.png');
+    background-image: url('/logos/ktf.png');
 }
 .shniggers-theme main::before {
-    background-image: url('/logos/Shniggers.png');
+    background-image: url('/logos/shniggers.png');
 }
