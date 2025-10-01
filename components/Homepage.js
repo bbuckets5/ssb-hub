@@ -40,7 +40,6 @@ export default function Homepage() {
     const token = localStorage.getItem('authToken');
 
     if (token) {
-      // If user is logged in, call the API to pledge allegiance
       try {
         const res = await fetch('/api/community/pledge', {
           method: 'POST',
@@ -50,25 +49,20 @@ export default function Homepage() {
           },
           body: JSON.stringify({ communityName }),
         });
-
         const data = await res.json();
         if (!res.ok) {
-            // If they are already a member, just proceed
-            if (res.status === 400 && data.message.includes('already a member')) {
-                // Do nothing, just proceed to the feed
-            } else {
-                throw new Error(data.message || 'An error occurred.');
-            }
+          if (res.status === 400 && data.message.includes('already a member')) {
+            // Do nothing, just proceed
+          } else {
+            throw new Error(data.message || 'An error occurred.');
+          }
         }
-        
         localStorage.setItem('selectedCommunity', communityName);
         router.push('/feed');
-
       } catch (error) {
         alert(`Error: ${error.message}`);
       }
     } else {
-      // If they are a new visitor, send them to signup
       router.push(`/signup?community=${communityName}`);
     }
   };
@@ -76,20 +70,32 @@ export default function Homepage() {
   return (
     <div className="homepage-container">
       <div className="grid-background"></div>
+
       <div onClick={() => handleCommunitySelect('ytg')} className="community-card ytg">
-        <div className="card-content"><h2>YTG</h2></div>
+        <div className="card-content">
+          <img src="/logos/Ytg.png" alt="YTG Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('bau')} className="community-card bau">
-        <div className="card-content"><h2>BAU</h2></div>
+        <div className="card-content">
+          {/* Add bau.png to /public/logos when you have it */}
+          <h2>BAU</h2> 
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('arl')} className="community-card arl">
-        <div className="card-content"><h2>ARL</h2></div>
+        <div className="card-content">
+          <img src="/logos/Arl.png" alt="ARL Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('ktf')} className="community-card ktf">
-        <div className="card-content"><h2>KTF</h2></div>
+        <div className="card-content">
+          <img src="/logos/Ktf.png" alt="KTF Logo" />
+        </div>
       </div>
       <div onClick={() => handleCommunitySelect('shniggers')} className="community-card shniggers">
-        <div className="card-content"><h2>SHNIGGERS</h2></div>
+        <div className="card-content">
+          <img src="/logos/Shniggers.png" alt="Shniggers Logo" />
+        </div>
       </div>
     </div>
   );
