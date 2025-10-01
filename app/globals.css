@@ -81,3 +81,6 @@ main::before {
 .shniggers-theme main::before {
     background-image: url('/logos/Shniggers-logo.png');
 }
+.bau-theme main::before {
+    background-image: url('/logos/Bau-logo.png'); 
+}
